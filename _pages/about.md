@@ -4,8 +4,12 @@ title: About Me
 permalink: /about/
 ---
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+### Hi there, I'm Mehul  👋
 
+## I'm a Student Developer and ML enthusiast!
 
-
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
+-  I’m currently working on several ML and data science projects 
+-  I love creating amazing things using code 
+-  I aspire to become a ML engineer/Data scientist
+-  Fun fact: I love to play drums
+-  Feel free to go through my repositories , you might find something interesting
