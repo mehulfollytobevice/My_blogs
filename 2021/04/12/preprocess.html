@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>The essentials of data preprocessing for tabular data | Thoughts, code and some mischief</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="The essentials of data preprocessing for tabular data" />
+<meta name="author" content="Mehul Jain" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will explore the essential steps you need to take to preprocess your data and ensure that it is in the right form before you dump it in your “fancy” ML/DL model." />
+<meta property="og:description" content="In this blog post we will explore the essential steps you need to take to preprocess your data and ensure that it is in the right form before you dump it in your “fancy” ML/DL model." />
+<link rel="canonical" href="https://mehulfollytobevice.github.io/My_blogs/2021/04/12/preprocess.html" />
+<meta property="og:url" content="https://mehulfollytobevice.github.io/My_blogs/2021/04/12/preprocess.html" />
+<meta property="og:site_name" content="Thoughts, code and some mischief" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-12T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://mehulfollytobevice.github.io/My_blogs/2021/04/12/preprocess.html","@type":"BlogPosting","headline":"The essentials of data preprocessing for tabular data","dateModified":"2021-04-12T00:00:00-05:00","datePublished":"2021-04-12T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://mehulfollytobevice.github.io/My_blogs/2021/04/12/preprocess.html"},"author":{"@type":"Person","name":"Mehul Jain"},"description":"In this blog post we will explore the essential steps you need to take to preprocess your data and ensure that it is in the right form before you dump it in your “fancy” ML/DL model.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/My_blogs/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://mehulfollytobevice.github.io/My_blogs/feed.xml" title="Thoughts, code and some mischief" /><link rel="shortcut icon" type="image/x-icon" href="/My_blogs/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/My_blogs/">Thoughts, code and some mischief</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/My_blogs/about/">About Me</a><a class="page-link" href="/My_blogs/search/">Search</a><a class="page-link" href="/My_blogs/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">The essentials of data preprocessing for tabular data</h1><p class="page-description">In this blog post  we will explore the essential steps you need to take to preprocess your data and ensure that it is in the right form before you dump it in your "fancy"  ML/DL model.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-04-12T00:00:00-05:00" itemprop="datePublished">
+        Apr 12, 2021
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Mehul Jain</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      14 min read
+    
+</span></p>
+
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/mehulfollytobevice/My_blogs/tree/master/_notebooks/2021-04-12-preprocess.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/My_blogs/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/mehulfollytobevice/My_blogs/master?filepath=_notebooks%2F2021-04-12-preprocess.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/My_blogs/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/mehulfollytobevice/My_blogs/blob/master/_notebooks/2021-04-12-preprocess.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/My_blogs/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Downloading-dataset-from-Kaggle">Downloading dataset from Kaggle </a></li>
+<li class="toc-entry toc-h2"><a href="#Exploring-the-data">Exploring the data </a></li>
+<li class="toc-entry toc-h2"><a href="#The-essential-preprocessing-techniques">The essential preprocessing techniques </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Label-Encoding">Label Encoding </a></li>
+<li class="toc-entry toc-h3"><a href="#One-hot-encoding">One-hot encoding </a></li>
+<li class="toc-entry toc-h3"><a href="#Imputation">Imputation </a></li>
+<li class="toc-entry toc-h3"><a href="#Standardization">Standardization </a></li>
+<li class="toc-entry toc-h3"><a href="#Normalization">Normalization </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-04-12-preprocess.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you ask data scientists which part of the ML pipeline takes the most amount of time, they will probably tell you that it's the data preprocessing stage. Ensuring your data is in the right form before you dump it into your ML/DL model is of paramount importance. If you feed in garbage to your model, you will get garbage as the output. In this blog post we will see some of the essential techniques that you can use to preprocess your data properly.</p>
+<p>But first, we need to get some data.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Downloading-dataset-from-Kaggle">
+<a class="anchor" href="#Downloading-dataset-from-Kaggle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Downloading dataset from Kaggle<a class="anchor-link" href="#Downloading-dataset-from-Kaggle"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This notebook is built using Google Colab. It is a notebook server provided by Google for free. You can also use other services to run the code below but you will have to figure out how to get the dataset. The dataset that we use here is present on Kaggle and you can directly download it from <a href="https://www.kaggle.com/spscientist/students-performance-in-exams?select=StudentsPerformance.csv">here</a>.</p>
+<p>In this notebook, we are going to download the dataset from Kaggle into Google Colab and store it in a directory in our Google Drive. Storing your data in the Drive saves you from the trouble of downloading the dataset every time you start a new session  in Colab.</p>
+<p>For further guidance read this wonderful article by Mrinali Gupta: <a href="https://medium.com/analytics-vidhya/how-to-fetch-kaggle-datasets-into-google-colab-ea682569851a">How to fetch Kaggle Datasets into Google Colab</a></p>
+<p>So let's get to it!</p>
+<p>First, we need to mount our google drive so that we can access all the folders in the drive.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">drive</span>
+<span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">'/content/gdrive'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Mounted at /content/gdrive
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Then we will using the following code to provide a config path for the Kaggle Json API</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'KAGGLE_CONFIG_DIR'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"/content/gdrive/My Drive/kaggle/StudentPerformance"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We will change our current directory to where we want the dataset to be downloaded</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="o">%</span><span class="n">cd</span> <span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="n">gdrive</span><span class="o">/</span><span class="n">My</span> <span class="n">Drive</span><span class="o">/</span><span class="n">kaggle</span><span class="o">/</span><span class="n">StudentPerformance</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>/content/gdrive/My Drive/kaggle/StudentPerformance
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we can download the dataset from kaggle</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="err">!</span><span class="n">kaggle</span> <span class="n">datasets</span> <span class="n">download</span> <span class="o">-</span><span class="n">d</span> <span class="n">spscientist</span><span class="o">/</span><span class="n">students</span><span class="o">-</span><span class="n">performance</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">exams</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Downloading students-performance-in-exams.zip to /content/gdrive/My Drive/kaggle/StudentPerformance
+  0% 0.00/8.70k [00:00&lt;?, ?B/s]
+100% 8.70k/8.70k [00:00&lt;00:00, 1.14MB/s]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's unzip the files</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="err">!</span><span class="n">unzip</span> \<span class="o">*.</span><span class="n">zip</span>  <span class="o">&amp;&amp;</span> <span class="n">rm</span> <span class="o">*.</span><span class="n">zip</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Archive:  students-performance-in-exams.zip
+  inflating: StudentsPerformance.csv  
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What files are present in the current directory?</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="err">!</span><span class="n">ls</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>kaggle.json  StudentsPerformance.csv
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can see that there is a "StudentsPerformance.csv" file present in the directory. That is our dataset.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exploring-the-data">
+<a class="anchor" href="#Exploring-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exploring the data<a class="anchor-link" href="#Exploring-the-data"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Before we apply any preprocessing steps to the data, we need to know what kind of data the dataset contains. Is it textual data? Is it numerical data? Are there any dates present? What about geographic locations?</p>
+<p>There are a lot of questions we can ask about the data in out dataset. So before we move further, we need to get a sense of what hidden knowledge our dataset contains.</p>
+<p>In the code cells below you will see some of the most common steps you can apply to gather information about your data.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"StudentsPerformance.csv"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>First 5 rows of the dataset</em></strong> <br>Seeing the first and last few rows can be really helpul in creating a mental picture about the data. It also allows you to map out the possible roadblocks you are going to face in acheiving your end goal.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gender</th>
+      <th>race/ethnicity</th>
+      <th>parental level of education</th>
+      <th>lunch</th>
+      <th>test preparation course</th>
+      <th>math score</th>
+      <th>reading score</th>
+      <th>writing score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>female</td>
+      <td>group B</td>
+      <td>bachelor's degree</td>
+      <td>standard</td>
+      <td>none</td>
+      <td>72</td>
+      <td>72</td>
+      <td>74</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>female</td>
+      <td>group C</td>
+      <td>some college</td>
+      <td>standard</td>
+      <td>completed</td>
+      <td>69</td>
+      <td>90</td>
+      <td>88</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>female</td>
+      <td>group B</td>
+      <td>master's degree</td>
+      <td>standard</td>
+      <td>none</td>
+      <td>90</td>
+      <td>95</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>male</td>
+      <td>group A</td>
+      <td>associate's degree</td>
+      <td>free/reduced</td>
+      <td>none</td>
+      <td>47</td>
+      <td>57</td>
+      <td>44</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>male</td>
+      <td>group C</td>
+      <td>some college</td>
+      <td>standard</td>
+      <td>none</td>
+      <td>76</td>
+      <td>78</td>
+      <td>75</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>Last 5 rows of the dataset</em></strong></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gender</th>
+      <th>race/ethnicity</th>
+      <th>parental level of education</th>
+      <th>lunch</th>
+      <th>test preparation course</th>
+      <th>math score</th>
+      <th>reading score</th>
+      <th>writing score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>995</th>
+      <td>female</td>
+      <td>group E</td>
+      <td>master's degree</td>
+      <td>standard</td>
+      <td>completed</td>
+      <td>88</td>
+      <td>99</td>
+      <td>95</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>male</td>
+      <td>group C</td>
+      <td>high school</td>
+      <td>free/reduced</td>
+      <td>none</td>
+      <td>62</td>
+      <td>55</td>
+      <td>55</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>female</td>
+      <td>group C</td>
+      <td>high school</td>
+      <td>free/reduced</td>
+      <td>completed</td>
+      <td>59</td>
+      <td>71</td>
+      <td>65</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>female</td>
+      <td>group D</td>
+      <td>some college</td>
+      <td>standard</td>
+      <td>completed</td>
+      <td>68</td>
+      <td>78</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>female</td>
+      <td>group D</td>
+      <td>some college</td>
+      <td>free/reduced</td>
+      <td>none</td>
+      <td>77</td>
+      <td>86</td>
+      <td>86</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>Information about data type of columns and null values</em></strong> <br>
+Knowing the data type of each column is crucial is choosing the right preprocessing step for that column as well as understanding what the values in the column represent.</p>
+<p>Another crucial piece of information is the number of non-null values. It helps you in deciding which columns need imputation.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 1000 entries, 0 to 999
+Data columns (total 8 columns):
+ #   Column                       Non-Null Count  Dtype 
+---  ------                       --------------  ----- 
+ 0   gender                       1000 non-null   object
+ 1   race/ethnicity               1000 non-null   object
+ 2   parental level of education  1000 non-null   object
+ 3   lunch                        1000 non-null   object
+ 4   test preparation course      1000 non-null   object
+ 5   math score                   1000 non-null   int64 
+ 6   reading score                1000 non-null   int64 
+ 7   writing score                1000 non-null   int64 
+dtypes: int64(3), object(5)
+memory usage: 62.6+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>Checking if the dataset has null values</em></strong> <br>
+In the last cell, we saw how you can see if there are null values in your dataset. Below is another method to confirm if your data has any null/ missing values. As you can see below, this dataset does not have any null values.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+  <span class="n">bool_series</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"Column:</span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> null values."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="n">bool_series</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Column:gender has 0 null values.
+Column:race/ethnicity has 0 null values.
+Column:parental level of education has 0 null values.
+Column:lunch has 0 null values.
+Column:test preparation course has 0 null values.
+Column:math score has 0 null values.
+Column:reading score has 0 null values.
+Column:writing score has 0 null values.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>Describing the numerical columns in the dataset</em></strong><br>
+If you are applying regression or even classification, knowing the summary statistics might help you in deciding how you want to handle the numerical features. Maybe you have to apply some transformations before you apply regression. Maybe the numerical features can be dropped in case they do not contribute much.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>math score</th>
+      <th>reading score</th>
+      <th>writing score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1000.00000</td>
+      <td>1000.000000</td>
+      <td>1000.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>66.08900</td>
+      <td>69.169000</td>
+      <td>68.054000</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>15.16308</td>
+      <td>14.600192</td>
+      <td>15.195657</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.00000</td>
+      <td>17.000000</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>57.00000</td>
+      <td>59.000000</td>
+      <td>57.750000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>66.00000</td>
+      <td>70.000000</td>
+      <td>69.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>77.00000</td>
+      <td>79.000000</td>
+      <td>79.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>100.00000</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>How many unique values does each column have</em></strong> <br>
+You might want to know how many unique values each column has. This is helpful when you have a big dataset and you are thinking of generating more features from the existing features. This is also important when you are dealing with cases where the <a href="https://en.wikipedia.org/wiki/Curse_of_dimensionality">Curse of Dimensionality</a> becomes relevant.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>gender                          2
+race/ethnicity                  5
+parental level of education     6
+lunch                           2
+test preparation course         2
+math score                     81
+reading score                  72
+writing score                  77
+dtype: int64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="The-essential-preprocessing-techniques">
+<a class="anchor" href="#The-essential-preprocessing-techniques" aria-hidden="true"><span class="octicon octicon-link"></span></a>The essential preprocessing techniques<a class="anchor-link" href="#The-essential-preprocessing-techniques"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this section, we will cover the essential preprocessing techniques you can apply to your data before feeding it into your model. This is by no means an exhaustive list of techniques you can apply, but this covers the most common techinques applied in the ML industry.</p>
+<p>The order in which we apply these techniques is very important since each preprocessing step transforms the data such that it may become incompatible for another preprocessing step.</p>
+<p>We are going to apply our preprocessing techniques in the following order :</p>
+<ol>
+<li>Label Encoding (if needed)</li>
+<li>One-hot Encoding</li>
+<li>Imputation</li>
+<li>Normalization or Standardization</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Label-Encoding">
+<a class="anchor" href="#Label-Encoding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Label Encoding<a class="anchor-link" href="#Label-Encoding"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We saw in the previous section that our data cantains columns which have string values. Although, we can  understand what these string values represent, a machine does not. So , to make these values machine-readable we have to find a way to represent them numerically. Label Encoding is one such method of accomplishing this.</p>
+<p>In Label Encoding, we assign a unique integer value to each class in the data. This means that the gender column in our dataset will be encoded like so:</p>
+<table>
+<tr>
+<td><b>Original values</b></td>
+<td>Male</td>
+<td>Female</td>
+</tr>
+<td><b>Label Encoded values</b></td>
+<td>0</td>
+<td>1</td>
+&lt;/tr&gt;
+</table>
+<p>Let's see this in action. We are going to label encode the following columns in our dataset:</p>
+<ul>
+<li>gender  </li>
+<li>race/ethnicity    </li>
+<li>parental level of education   </li>
+<li>lunch </li>
+<li>test preparation course</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c1"># creating a copy of our data since we do not want to change the original dataset</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]:</span>
+  <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">LabelEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gender</th>
+      <th>race/ethnicity</th>
+      <th>parental level of education</th>
+      <th>lunch</th>
+      <th>test preparation course</th>
+      <th>math score</th>
+      <th>reading score</th>
+      <th>writing score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>72</td>
+      <td>72</td>
+      <td>74</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2</td>
+      <td>4</td>
+      <td>1</td>
+      <td>0</td>
+      <td>69</td>
+      <td>90</td>
+      <td>88</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>1</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>90</td>
+      <td>95</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>47</td>
+      <td>57</td>
+      <td>44</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>76</td>
+      <td>78</td>
+      <td>75</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Although Label Encoding can be useful in many cases, there is a caveat. An algorithm will not be able to differentiate between a numerical variable and a label encoded variable. Due to this limitation, the values in the label encoded columns might be misunderstood. So  in our gender column, '1' might be given a higher priority than '0' even when no numerical relation exists between the two classes.</p>
+<p>Due to this limitation, we need to find a better way of representing our categorical variables in a numerical form.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="One-hot-encoding">
+<a class="anchor" href="#One-hot-encoding" aria-hidden="true"><span class="octicon octicon-link"></span></a>One-hot encoding<a class="anchor-link" href="#One-hot-encoding"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Due to the shortcomings of Label Encoding, we cannot apply it to transform categorical variables into numerical values. Instead, we use One-Hot Encoding. In One-Hot Encoding, we take the n categories in a column and create n or n-1 columns from them. The new columns contain only binary values (0 or 1). So, if our gender column is one-hot encoded, then we will have two new columns: Male and Female. The values in these columns will be 0 (Male column) and 1 (Female column) if a row earlier had 'female' as the gender and vice versa.</p>
+<p>Let's see how to implement this.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span><span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#drop_first can also be False</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>math score</th>
+      <th>reading score</th>
+      <th>writing score</th>
+      <th>gender_male</th>
+      <th>race/ethnicity_group B</th>
+      <th>race/ethnicity_group C</th>
+      <th>race/ethnicity_group D</th>
+      <th>race/ethnicity_group E</th>
+      <th>parental level of education_bachelor's degree</th>
+      <th>parental level of education_high school</th>
+      <th>parental level of education_master's degree</th>
+      <th>parental level of education_some college</th>
+      <th>parental level of education_some high school</th>
+      <th>lunch_standard</th>
+      <th>test preparation course_none</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>72</td>
+      <td>72</td>
+      <td>74</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>69</td>
+      <td>90</td>
+      <td>88</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>90</td>
+      <td>95</td>
+      <td>93</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>47</td>
+      <td>57</td>
+      <td>44</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>76</td>
+      <td>78</td>
+      <td>75</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In the above code, the function has a parameter <em>drop_first</em>. What does this mean? In one-hot encoding, we usually drop one of the columns created for each categorical variable to avoid high correlation among the features. But, in many cases dropping columns can have a negative impact on the model performance. So it is always better to experiment and see what works in your case.</p>
+<p>One-hot encoding is applied in almost all cases where we have to deal with categorical variables. But when the number of categories in a column gets too big, we cannot use this technique since the resulting dataset might be very large and difficult to handle. In this case, you might want to consider other alternatives like dropping the high-cardinality columns, using label encoding, using dimensionality reduction techniques.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Imputation">
+<a class="anchor" href="#Imputation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Imputation<a class="anchor-link" href="#Imputation"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Dealing with missing data is another important data preprocessing step. Missing values can have huge impacts on how your model performs. If a significant portion of values in a column are missing then you might consider dropping that column. But,dropping columns might actually result in leaving out essential information.So, we apply imputation.</p>
+<p>In imputation, we replace missing data with substituted values. Here, we will dicuss some of the common ways in which imputation is done:</p>
+<ul>
+<li>
+<strong>Replace by 0:</strong> Sometimes replacing numerical values with 0 can work. Suppose you have an Age column in your dataset. Filling 0 in the places where age is missing might not affect the model's accuracy.</li>
+<li>
+<strong>Replace by mean:</strong> You can also take the mean of all the values in the column and use that to fill the missing places. This is the most common imputation approach. But it is very sensitive to outliers.</li>
+<li>
+<strong>Replace by most_frequent:</strong> You can replace the missing values with the most frequent value. This can work for both categorical and numerical data. </li>
+<li>
+<strong>Replace using custom function:</strong> If you know how a particular column was generated then you can use that process to fill the missing values. Usually, this approach is not applicable since the data is downloaded from elsewhere.</li>
+</ul>
+<p>In our dataset, we do not have any missing values so we do not need to apply imputation.</p>
+<p>For futher guidance: <a href="https://scikit-learn.org/stable/modules/impute.html">Imputation of missing values</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Standardization">
+<a class="anchor" href="#Standardization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Standardization<a class="anchor-link" href="#Standardization"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Even after converting our data into a machine readable format, our work is not done. In any dataset, you will have parameters that our measured in different units. For example, you might have Time (measured in hours) and Distance (measured in miles).The values of these parameters will have different distributions and different min/max values. You cannot combine these different parameters using a ML model without taking into account their measurement units.So, we use standardization and normalization.</p>
+<p>Both of these techniques transform the data in a way such that it either becomes dimensionless (in terms of measurement units)  or the parameters end up having similar distributions.</p>
+<p>The biggest difference between standardization and normalization is as follows:</p>
+<ul>
+<li>Standardization typically rescales the values to have a mean of 0 and a standard deviation of 1 (unit variance). </li>
+<li>Normalization typically rescales the values into a range of [0,1].</li>
+</ul>
+<p>Because of the difference in the way they transform the values we get a different output in each case.</p>
+<p>Let's scale our data.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">data</span><span class="o">=</span><span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[ 0.39002351,  0.19399858,  0.39149181, -0.96462528,  2.0647416 ,
+        -0.68441857, -0.59583014, -0.40347329,  2.73396713, -0.49374193,
+        -0.2503982 , -0.54036068, -0.4669334 ,  0.74188112,  0.74674788],
+       [ 0.19207553,  1.42747598,  1.31326868, -0.96462528, -0.4843221 ,
+         1.46109419, -0.59583014, -0.40347329, -0.36576885, -0.49374193,
+        -0.2503982 ,  1.85061578, -0.4669334 ,  0.74188112, -1.33914006],
+       [ 1.57771141,  1.77010859,  1.64247471, -0.96462528,  2.0647416 ,
+        -0.68441857, -0.59583014, -0.40347329, -0.36576885, -0.49374193,
+         3.99363901, -0.54036068, -0.4669334 ,  0.74188112,  0.74674788]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now let's look at normalization.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Normalization">
+<a class="anchor" href="#Normalization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Normalization<a class="anchor-link" href="#Normalization"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Normalization typically rescales the values into a range of [0,1]. As you will see below, there is a notable difference between the output of standardization and normalization. Normalization will not transform the values of your categorical/one-hot encoded variables in any way. On the other hand, standardization transforms all the columns in the dataset.</p>
+<p>So, let's normalize our data.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+<span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">data</span><span class="o">=</span><span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[0.72      , 0.6626506 , 0.71111111, 0.        , 1.        ,
+        0.        , 0.        , 0.        , 1.        , 0.        ,
+        0.        , 0.        , 0.        , 1.        , 1.        ],
+       [0.69      , 0.87951807, 0.86666667, 0.        , 0.        ,
+        1.        , 0.        , 0.        , 0.        , 0.        ,
+        0.        , 1.        , 0.        , 1.        , 0.        ],
+       [0.9       , 0.93975904, 0.92222222, 0.        , 1.        ,
+        0.        , 0.        , 0.        , 0.        , 0.        ,
+        1.        , 0.        , 0.        , 1.        , 1.        ]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again, it is very important to experiment with both of these techniques to see which one works for you.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this blog post we have seen the essentials of data preprocessing for tabular data. My goal with this blog post was to provide a condensed overview of the what data preprocessing looks like with useful code snippets that anyone can use in their projects. Applying proper preprocessing can be extremely helpful in improving the model performance and ensuring that your model is ready for the real world.</p>
+<p>If hope you liked this blog post, please share it with other ML enthusiasts.</p>
+<p><em>See you on the next adventure.</em></p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="mehulfollytobevice/My_blogs"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/My_blogs/2021/04/12/preprocess.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/My_blogs/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/My_blogs/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/My_blogs/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A place to find interesting blogs on AI , ML and life</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/mehulfollytobevice" title="mehulfollytobevice"><svg class="svg-icon grey"><use xlink:href="/My_blogs/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
