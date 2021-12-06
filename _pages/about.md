@@ -20,13 +20,11 @@ permalink: /about/
 - [Machine Learning Micro-Project Repository](https://github.com/mehulfollytobevice/MachineLearning)
 - [COVID-19 Contact Tracer](https://github.com/mehulfollytobevice/COVID-19-Contact-Tracer)
 
-<br />
-
 ## 📫 Connect with me
-<p>
+
 <a href="https://www.linkedin.com/in/mehul-jain-91a26a194"><img src="https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white" /></a>&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="mailto:mehul.jain.codedev@gmail.com?subject=Hello%20Mehul,%20From%20Github"><img src="https://img.shields.io/badge/gmail-%23D14836.svg?&style=for-the-badge&logo=gmail&logoColor=white" /></a>&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://www.instagram.com/follytobevice/"><img src="https://img.shields.io/badge/instagram-%23D14836.svg?&style=for-the-badge&logo=instagram&logoColor=pink" /></a>&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://www.kaggle.com/follytobevice"><img src="https://img.shields.io/badge/kaggle-%27D1203.svg?&style=for-the-badge&logo=kaggle&logoColor=blue" /></a>&nbsp;&nbsp;&nbsp;&nbsp;
-</p>
+
 
