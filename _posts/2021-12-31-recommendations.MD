@@ -1,14 +1,11 @@
 ---
-toc: true
 comments: true
 layout: post
 categories: [markdown]
 title: Books, Podcasts and Anime - My recommendations for 2022
 ---
 
-# Books, Podcasts and Anime - My recommendations for 2022
-
-<h4><b>A very happy new year to everyone. Let's hope for a productive, blissful, peaceful yet exciting year.🤞  And don't forget, <i> discipline = freedom. </i></b> </h4>
+<h3><b>A very happy new year to everyone. Let's hope for a productive, blissful, peaceful yet exciting year.🤞  And don't forget, <i> discipline = freedom. </i></b> </h3>
 
 ## 📚Books:
 ### Non-Fiction:
