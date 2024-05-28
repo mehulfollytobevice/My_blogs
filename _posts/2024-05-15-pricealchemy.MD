@@ -2,7 +2,7 @@
 toc: true
 comments: false
 layout: post
-categories: [markdown, machine_learning, mlops ]
+categories: [markdown, machine_learning]
 title: MLOps in Action - How to Implement an End-to-End Pipeline for Your Project
 ---
 
