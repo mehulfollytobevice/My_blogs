@@ -6,10 +6,10 @@ permalink: /about/
 
 
 <h1 align="center">Hi 👋, I'm Mehul</h1>
-<h3 align="center">Incoming Graduate Student at Northeastern University, Boston</h3>
+<h3 align="center">Graduate Student at Northeastern University, Boston</h3>
 <br/>
 
--  🏛 I am an incoming graduate student at Northeastern University, Boston pursuing my <b>Master's Degree in Data Science.</b>
+-  🏛 I am a graduate student at Northeastern University, Boston pursuing my <b>Master's Degree in Data Science.</b>
 -  🎯 I’m primarily interested in data science and machine learning.
 -  🧩 I love creating amazing things using code.
 -  🥁 Fun fact: I play drums and Indian classical flute.
